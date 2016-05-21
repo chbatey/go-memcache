@@ -1,6 +1,5 @@
 Current todo
 
-* Handle multi get
 * Make file
 * Load test
 * Add profiling

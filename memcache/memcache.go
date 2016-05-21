@@ -30,12 +30,11 @@ type memcache struct {
 	listener       net.Listener
 }
 
-func New(listen_address string, port int) Memcache {
-	log.Infof("Starting memcache server on host %s port %d", listen_address, port)
+func New() Memcache {
 	return &memcache{
 		data:           make(map[string]entry),
-		listen_address: listen_address,
-		listen_port:    port,
+		listen_address: "localhost",
+		listen_port:    8080,
 		closed:         make(chan string),
 	}
 }
@@ -87,7 +86,7 @@ func (m *memcache) handleConnection(conn net.Conn) {
 		command := lines[0]
 		if command == "set" {
 			key := lines[1]
-			log.Infof("Processing set for key %s", key)
+			log.Debug("Processing set")
 			flags, _ := strconv.Atoi(lines[2])
 			ttl, _ := strconv.Atoi(lines[3])
 			length, _ := strconv.Atoi(lines[4])
@@ -137,9 +136,8 @@ func (m *memcache) handleConnection(conn net.Conn) {
 }
 
 func (m *memcache) Stop() error {
-	log.Infof("Closing down listener %s", m.listener)
+	log.Debugf("Closing down listener", m.listener)
 	if m.listener != nil {
-		log.Infof("Closing listenerk")
 		m.listener.Close()
 	}
 	close(m.closed)
